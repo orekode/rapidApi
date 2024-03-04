@@ -13,6 +13,11 @@ return new class extends Migration
     {
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->string('image')->default('category.jpg');
+            $table->decimal('score')->default(0);
+            $table->longText('ancestors')->default('');
+            $table->unsignedBigInteger('parent')->nullable();
             $table->timestamps();
         });
     }
