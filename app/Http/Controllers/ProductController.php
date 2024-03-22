@@ -55,25 +55,27 @@ class ProductController extends Controller
     {
         $product->update($request->all());
 
-        foreach ($request->file('images') as $image) {
-            if ($path = $image->store('product/images')) {
-                $product->images()->create([
-                    'image' => $path
-                ]);
+        if ($request->file('images'))
+            foreach ($request->file('images') as $image) {
+                if ($path = $image->store('product/images')) {
+                    $product->images()->create([
+                        'image' => $path
+                    ]);
+                }
             }
-        }
 
-        foreach ($request->images_removed as $id) {
-            $image = ProductImage::find($id);
+        if ($request->images_removed)
+            foreach ($request->images_removed as $id) {
+                $image = ProductImage::find($id);
 
-            if ($image) {
-                FileTrash::create([
-                    'path' => $image->image
-                ]);
+                if ($image) {
+                    FileTrash::create([
+                        'path' => $image->image
+                    ]);
 
-                $image->delete();
+                    $image->delete();
+                }
             }
-        }
 
         return new ProductResource($product);
     }
@@ -83,6 +85,6 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        //
+        return $product->delete();
     }
 }

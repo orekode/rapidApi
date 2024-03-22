@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Brand;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Models\Category;
@@ -21,8 +22,11 @@ class ProductResource extends JsonResource
 
         $categories = explode(' ', $this->categories);
         $categories = Category::whereIn('id', $categories)->get();
-
         $response['categories'] = $categories;
+
+        $brands = explode(' ', $this->brands);
+        $brands = Brand::whereIn('id', $brands)->get();
+        $response['brands'] = $brands;
 
         foreach ($response['images'] as &$image) {
             $image['image'] = env('UPLOAD_URL') . $image['image'];

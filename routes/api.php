@@ -20,6 +20,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-
 Route::resource('categories', CategoryController::class);
 Route::resource('products', ProductController::class);
+Route::resource('brands', BrandController::class);
+Route::resource('orders', OrderController::class);
+Route::resource('slides', SlidesController::class);

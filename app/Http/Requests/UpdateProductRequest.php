@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Models\Category;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateProductRequest extends FormRequest
 {
@@ -12,7 +13,7 @@ class UpdateProductRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -23,7 +24,7 @@ class UpdateProductRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'                  => ['unique:products,name,except,' . $this->product->id],
+            'name'                  => [Rule::unique('products', 'name')->ignore($this->product->id)],
             'price'                 => ['numeric'],
             'quantity'              => ['integer'],
             'categories'            => [function ($attr, $value, $fail) {
