@@ -59,8 +59,8 @@ class SlidesController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Slides $slides)
+    public function destroy(Slides $slide)
     {
-        $slides->delete();
+        $slide->delete();
     }
 }

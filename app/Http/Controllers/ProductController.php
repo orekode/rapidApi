@@ -18,7 +18,7 @@ class ProductController extends Controller
     {
 
         return ProductResource::collection(
-            Product::filter()->orderBy('score', 'desc')->paginate()
+            Product::filter()->sort()->orderBy('score', 'desc')->paginate()
         );
     }
 
@@ -28,6 +28,27 @@ class ProductController extends Controller
     public function store(StoreProductRequest $request)
     {
         $product = Product::create($request->all());
+
+        $categoryIds = explode(' ', trim($request->categories));
+
+        $categories = "";
+
+        foreach($categoryIds as $categoryId) {
+            $categories .= "{{$categoryId}}";
+        }
+
+        $brandIds = explode(' ', trim($request->brands));
+
+        $brands = "";
+
+        foreach($brandIds as $brandId) {
+            $brands .= "{{$brandId}}";
+        }
+
+        $product->update([
+            'categories' => $categories,
+            'brands'     => $bands
+        ]);
 
         foreach ($request->file('images') as $image) {
             if ($path = $image->store('product/images')) {
@@ -54,6 +75,32 @@ class ProductController extends Controller
     public function update(UpdateProductRequest $request, Product $product)
     {
         $product->update($request->all());
+
+        if ($request->categories) {
+            $categoryIds = explode(' ', trim($request->categories));
+            $categories = "";
+
+            foreach($categoryIds as $categoryId) {
+                $categories .= "{{$categoryId}} ";
+            }
+
+            $product->update([
+                'categories' => $categories
+            ]);
+        }
+
+        if ($request->brands) {
+            $brandIds = explode(' ', trim($request->brands));
+            $brands = "";
+
+            foreach($brandIds as $brandId) {
+                $brands .= "{{$brandId}} ";
+            }
+
+            $product->update([
+                'brands' => $brands
+            ]);
+        }
 
         if ($request->file('images'))
             foreach ($request->file('images') as $image) {

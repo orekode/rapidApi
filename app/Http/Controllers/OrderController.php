@@ -9,14 +9,46 @@ use App\Http\Resources\OrderResource;
 use App\Models\Order;
 use App\Models\OrderProduct;
 use App\Models\Product;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $orders = new Order();
+
+        if (isset($request->filters['name']['$contains'])) {
+            // return $request->filters['name']['$contains'];
+            $products = Product::where('name', 'like', "%{$request->filters['name']['$contains']}%")->get();
+            $products = $products->pluck('id');
+
+            $orders = OrderProduct::whereIn('product', $products)->get();
+            $orders = $orders->pluck('order');
+            $orders = Order::whereIn('id', $orders);
+        }
+
+        return OrderResource::collection($orders->paginate());
+    }
+
+    public function userOrders(Request $request)
+    {
+        $orders = new Order();
+
+        if (isset($request->filters['name']['$contains'])) {
+            // return $request->filters['name']['$contains'];
+            $products = Product::where('name', 'like', "%{$request->filters['name']['$contains']}%")->get();
+            $products = $products->pluck('id');
+
+            $orders = OrderProduct::whereIn('product', $products)->get();
+            $orders = $orders->pluck('order');
+            $orders = Order::whereIn('id', $orders);
+        }
+
+        return OrderResource::collection($orders->where('email', Auth::user()->email)->paginate());
     }
 
     /**
@@ -72,6 +104,28 @@ class OrderController extends Controller
      */
     public function show(Order $order)
     {
+        return new OrderResource($order);
+    }
+
+    public function userOrder(Order $order)
+    {
+        if ($order->email == Auth::user()->email) {
+            return new OrderResource($order);
+        }
+    }
+
+    public function confirmOrder(OrderProduct $product)
+    {
+        $product->update([
+            'status' => 'confirmed',
+        ]);
+    }
+
+    public function rejectOrder(OrderProduct $product)
+    {
+        $product->update([
+            'status' => 'rejected',
+        ]);
     }
 
     /**

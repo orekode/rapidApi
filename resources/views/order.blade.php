@@ -139,7 +139,7 @@
         
 
         <p>Regards,<br>
-        Your Store Team</p>
+            Rapid Crew Tech</p>
 
         @if (isset($link) and !empty($link))
             <div class="bottom-section">

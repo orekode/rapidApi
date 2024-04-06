@@ -3,9 +3,9 @@
 namespace App\Http\Resources;
 
 use App\Models\Brand;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Models\Category;
 
 class ProductResource extends JsonResource
 {
@@ -20,19 +20,19 @@ class ProductResource extends JsonResource
 
         $response['images'] = $this->images;
 
-        $categories = explode(' ', $this->categories);
+        $categories = explode(' ', str_replace("{", "", str_replace("}", "", $this->categories)));
         $categories = Category::whereIn('id', $categories)->get();
         $response['categories'] = $categories;
 
-        $brands = explode(' ', $this->brands);
+        $brands = explode(' ', str_replace("{", "", str_replace("}", "", $this->brands)));
         $brands = Brand::whereIn('id', $brands)->get();
         $response['brands'] = $brands;
 
         foreach ($response['images'] as &$image) {
-            $image['image'] = env('UPLOAD_URL') . $image['image'];
+            $image['image'] = env('UPLOAD_URL').$image['image'];
         }
 
-        $response['image'] = $response['images'][0]['image'] ?? env('UPLOAD_URL') . 'products/product.jpg';
+        $response['image'] = $response['images'][0]['image'] ?? env('UPLOAD_URL').'products/product.jpg';
 
         return $response;
     }
